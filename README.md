@@ -12,10 +12,11 @@ Instructions
 ------------
 1. Merge the files from this repository with your local copy of Tarantula
 2. Recompile Tarantula's rails assets
-..1. Delete the /rails/public/assets/ directory
-..2. Execute rake assets:precompile in the /rails directory
+  1. Delete the /rails/public/assets/ directory
+  2. Execute rake assets:precompile in the /rails directory
 3. Reload your browser
-..<i>Note: If you don't see the changes reflected try these additional steps</i>
-..* Execute touch /rails/tmp/restart.txt
-..* Execute service httpd restart or restart the server of whatever Ruby deployment method you used
-..* Clear your web browser's history and cache
+
+_Note: If you don't see the changes reflected try these additional steps_
+  1. Execute touch /rails/tmp/restart.txt
+  2. Execute service httpd restart or restart the server of whatever Ruby deployment method you used
+  3. Clear your web browser's history and cache
