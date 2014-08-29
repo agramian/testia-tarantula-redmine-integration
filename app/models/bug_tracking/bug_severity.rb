@@ -6,7 +6,7 @@ Bug severity.
 class BugSeverity < ActiveRecord::Base
   include Comparable
   # 7 different severities in default bugzilla setting
-  Colors = {
+  Colors_Bugzilla = {
             :blocker     => '#FF0000',
             :critical    => '#FF00FF',
             :major       => '#0000FF',
@@ -15,18 +15,33 @@ class BugSeverity < ActiveRecord::Base
             :trivial     => '#555500',
             :enhancement => '#00FF00'
            }
+  # 5 different severities in default redmine setting
+  Colors_Redmine = {
+            :immediate  => '#FF0000',
+            :urgent     => '#FF00FF',
+            :high       => '#0000FF',
+            :normal     => '#BBCC00',
+            :low        => '#555555'
+           }
 
   # Return color for bug severity/priority depending bug tracker.
   #
   # Use configured color for given tracker type from environment.rb if
   # it's available, otherwise use hardcoded values or default to black
-  def self.color(name, tracker_type='Bugzilla')
+  def self.color(name, tracker_type='bugzilla')
     n = name.gsub(' ', '_').downcase.to_sym
     bt = tracker_type.gsub(' ', '_').downcase.to_sym
     unless BT_CONFIG[bt].blank? or BT_CONFIG[bt][:severities].blank?
       col = BT_CONFIG[bt][:severities][n]
     end
-    col ||= Colors[n] || '#000000'
+    
+    if tracker_type == "bugzilla"
+      col ||= Colors_Bugzilla[n] || '#000000'
+    elsif tracker_type == "redmine"
+      col ||= Colors_Redmine[n] || '#000000'
+    else
+      col = '#000000'
+    end
     col
   end
 

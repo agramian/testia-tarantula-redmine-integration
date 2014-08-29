@@ -50,11 +50,23 @@ class Redmine < BugTracker # STI
       ids
     end
 
-   def get_project_identifier_for_product(prid)
+    def get_project_identifier_for_product(prid)
       res = @connection.query(
               "select identifier from projects where id=#{prid};")
       res.first['identifier']   
-   end
+    end
+
+    def get_status_name_from_id(stid)
+      res = @connection.query(
+              "select name from issue_statuses where id=#{stid};")
+      res.first['name']   
+    end
+
+    def get_author_name_from_id(authid)
+      res = @connection.query(
+              "select login from users where id=#{authid};")
+      res.first['login']   
+    end
 
     def redmine_severities
       @connection.query("select * from enumerations where type='IssuePriority';")
@@ -159,8 +171,6 @@ class Redmine < BugTracker # STI
         profile_hash = db.redmine_users
         service = Import::Service.instance
         db.get_bugs(prids,self.last_fetched,force_update).each do |bug|
-          prof = profile_hash.detect{|p| p['id'] == bug['reporter']}
-          creator = (prof ? User.find_by_email(prof['login']) : nil)
 
           b_sev = severity_hash.detect{|s| s['id'] == bug['priority_id']}
           raise "Invalid severity ref in redmine (#{bug['priority_id']})" \
@@ -177,10 +187,10 @@ class Redmine < BugTracker # STI
                   :name             => bug['subject'],
                   :bug_product_id   => prod.id,
                   #:bug_component_id => comp.id,
-                  :status           => bug['status_id'],
+                  :status           => db.get_status_name_from_id(bug['status_id']),
                   :priority         => bug['priority'],
                   :desc             => db.get_longdesc(bug['id']),
-                  :created_by       => creator ? creator.id : nil }
+                  :created_by       => db.get_author_name_from_id(bug['author_id']) }
 
           old = service.find_ext_entity(Bug, data)
 
